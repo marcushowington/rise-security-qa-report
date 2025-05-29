@@ -17,7 +17,7 @@ ___
 
 ___
 ## Responsible Disclosure  
-All issues were communicated directly to the RISE founder and development team. The identified vulerabilities were reviewed and patched prior to this release.  
+All issues were communicated directly to the RISE founder and development team. The identified vulerabilities were reviewed and patched prior to this release. Specific endpoint names and request structures have been redacted or generalized to preserve platform confidentiality.  
 ___
 ## Summary  
 This report highlights the importance of API and mobile security testing. Collaboration with the RISE team enabled quick fixes and improved security during a critical launch phase.  
