@@ -23,4 +23,4 @@ ___
 This report highlights the importance of API and mobile security testing. Collaboration with the RISE team enabled quick fixes and improved security during a critical launch phase.  
 ___
 ##  Full Report  
-For a full list of identified issues and technical findings, see
+For a full list of identified issues and technical findings, see [Findings.md]
