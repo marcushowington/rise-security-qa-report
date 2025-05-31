@@ -76,10 +76,154 @@
   ___
   ###  Steps to Reproduce
   1. Intercepted a valid 'event_type' request.
-  2. Replace the value with an undefined string.
-  3. Sent the request
+  2. Replace the value with an undefined value.
+  3. Sent the modified request to the API endpoint.
   4. Observe a successful response with no errors.
-___  
+  ___
+  ### Expected Behavior
+  The server should validate all incoming 'event_type' values against a strict allowlist. Any unexpected or unrecognized values
+  should trigger a '4XX' error response.
+  ### Actual Behavior
+  The server accepted the modified 'event_type' and processed the event without performing validation or returning an error.
+  ___
+  ### Recommendation
+  Implement strict server-side validation for all 'event_type' values using a predefined list of expected names.
+  Reject or log any requests with unrecognized types.
+  ___  
+  ## 4. Lack of Validation on Core Metadata Fields
+  **Severity:** Medium  
+  **Status:** Patched  
+  ___
+  ### Summary
+  During testing, I modified key metadata fields in the event submission payload, including 'country_code', 'platform' , and 'environment'. I changed 'country_code' to an invalid value, 'platform' to 'Android' instead of 'iOS', and 'environment' to a fake value. Despite these changes, the server responded with a '200 OK' and accepted the events without any error or validation failure.
+  ___
+  ### Technical Details
+  The server failed to validate core metadata fields in the incoming event payload. These fields, which may be used for analytics, feature access control, or environment-specific logic, were accepted even when set to invalid or non-standard values. This lack of validation could lead to inconsistent backend behavior, spoofed environments, or corrupted data.
+  ___
+  ### Steps to Reproduce
+  1. Intercepted a valid event submission.
+  2. Modified the 'country_code' field to  'ZZ'
+  3. Modified the 'platform' field to 'Android' (when iOS was expected)
+  4. Modified the 'environment' field to 'Staging123'
+  5. Sent request to the server
+  6. Observed a successful '200 OK' response with no errors
+  ___
+  ### Expected Behavior
+  The server should validate incoming metadata fields like 'country_code', 'platform', and 'environment' against a list of expected values. Requests containing invalid or unexpected entries should be rejected or logged.
+  ### Actual Behavior
+  The server accepted all modified metadata fields without validation or error, processing them as if they were legitimate values.
+  ___
+  ### Recommendation
+  Implement strict server-side validation for metadata fields, reject or log any requests with unexpected inputs.
+  ___  
+  ## 5. Lack of Validation on User ID Field  
+  **Severity:** High  
+  **Status:** Patched  
+  ___
+  ## Summary
+  During testing, I modified the 'user_id' field within the event payload by adding a character to an otherwise valid ID.
+  Despite the modification, the server responded with a '200 OK' and accepted the event without any errors.
+  ___
+  ### Technical Details
+  The API endpoint failed to validate the authenticity of the 'user_id' field. This allowed modified, tampered or unregistered user IDs to be accepted without verification. This behavior can lead to user spoofing, fake activity generation, or manipulation of analytics and account-related data.
+  ### Steps to Reproduce
+  1. Intercepted a valid event request
+  2. Modified the 'user_id' field by changing a character to the original ID
+  3. Forwarded the modified request to the API endpoint
+  4. Observed a succesful '200 OK' response with no errors.
+  ___
+  ### Expected Behavior
+  The server should validate that the 'user_id' matches a real, authenticated session associated with the current user or device.
+  Amy tampered, unknown, or unregistered 'user_id' should be rejected.
+  ### Actual Behavior
+  The server accepted the modified 'user_id' and accepted the request without performing any validation or errors.
+  ___
+  ### Recommendation
+  Implement strict server-side validation of the 'user_id' field. The server should ensure that the 'user_id' matches
+  the authenticated user and device and events originating from unknown or tampered user IDs are rejected and logged.
+  ___
+  ## 6. Critical Lack Validation on Environment and User ID Fields
+  **Severity:** High  
+  **Status:** Patched  
+  ___
+  ### Summary
+  During testing, I modified both the 'environment' and 'user_id' fields inside a valid POST request to an endpoint.
+  I set 'environment' to 'admin' and slightly altered the 'user_id' value. Despite these changes, the server responded with '200 OK'
+  and accepted the event without any error or verification.
+  ___
+  ### Technical Details
+  The backend failed to enforce validation on two critical fields, 'environment' and 'user_id'. This allowed forged values to be
+  accepted without authentification checks. Events were successfully published under invalid or spoofed user and environmentat contexts, introducing trust and integrity issues.
+  ___
+  ### Steps to Reproduce
+  1. Intercepted a valid POST request to an endpoint
+  2. Modified the 'environment' field to 'admin'
+  3. Slightly altered the 'user_id' field to tampered version
+  4. Sent the request to the server
+  5. Observed a '200 OK' response with the event processed successfully
+  ___
+  ### Expected Behavior
+  The backend should validate sensitive fields like 'environment' and 'user_id', should only accepted predefined values, and the
+  'user_id' should match a valid registed user tied to the current session. Any manipulation should result in rejection or logging.
+  ### Actual Behavior
+  The server accepted forged environment and user identifiers without validation. Events were successfully modified under admin-like
+  contexts and invalid user IDs.
+  ### Recommendation
+  Implement strict server-side validation to only allow predefined values for fields like 'environment', cross check 'user_id'
+  values with active, authenticated sessions, and reject requests with any invalid, unknown or unauthorized field values.
+  
+
+
+
+
+
+  
+     
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+  
+  
+  
+
+
+ 
+
+
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+
+  
+  
+  
+  
 
   
    
